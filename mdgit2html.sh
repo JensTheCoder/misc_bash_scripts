@@ -1,9 +1,11 @@
 #!/bin/bash
 # mdgit2html.sh
+# Markdown to html with pandoc. Manage your private knowledge base with git.
+# Call this script through crontab and index the html target with recoll.
 # Author: Jens Bormueller
 # https://github.com/JensTheCoder/misc_bash_scripts.git
 # Example: mdgit2html.sh ssh://domain.com/var/local/git/md-docs.git /md-docs /md-html
-# Call this script through crontab and index the html target with recoll.
+# Dependencies
 # apt-get install pandoc
 # apt-get install recoll
 
