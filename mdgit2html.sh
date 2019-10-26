@@ -43,7 +43,7 @@ if [ $INIT -eq 1 ]; then
         rsync -a --exclude '.*/' --include '*/' --exclude '*' "./" "$TARGETPATH/"
 
         find . -name '*.md' -exec sh -c 'TAGETPATH="$0" ; SOURCEFILE="$1" ; pandoc "$SOURCEFILE" -s --toc -o "$TAGETPATH/${SOURCEFILE%.md}.html"' "$TARGETPATH" "{}" \;      
- fi
+fi
 
 # remove all files and directories from target
 # that got updated or removed by git from source dir
@@ -56,13 +56,14 @@ if [ $INIT -eq 0 ]; then
                         if [ -f "$TARGETPATH/$TARGETFILE" ]; then
                                 rm "$TARGETPATH/$TARGETFILE" 
                         fi
-
-                        # rsync can't remove empty directories,
-                        # so we call it after removing all files above
-                        rsync -a --exclude '.*/' --include '*/' --exclude '*' --delete "./" "$TARGETPATH/" 
                 fi
         done
+
+        # rsync can't remove non empty directories,
+        # so we call it after removing all files above
+        rsync -a --exclude '.*/' --include '*/' --exclude '*' --delete "./" "$TARGETPATH/" 
 fi
+
 
 # update or create target
 if [ $INIT -eq 0 ]; then
