@@ -9,12 +9,23 @@
 # apt-get install pandoc
 # apt-get install recoll
 
+set -e
+
+OLDIFS=$IFS
+IFS=$'\n'
+
 GITREPO="$1"
 GITPATH="${2%/}"
 TARGETPATH="${3%/}"
 INIT=0
 
 CURDIR=$(pwd)
+
+function quit {
+        IFS=$OLDIFS
+        cd "$CURDIR"
+        exit
+}
 
 if [ ! -d "$GITPATH" ]; then
         INIT=1
@@ -27,7 +38,7 @@ if [ $INIT -eq 1 ]; then
         git init 
         git remote add origin "$GITREPO"
         git fetch
-        git checkout origin/master -f
+        git checkout master
 fi
 
 if [ $INIT -eq 0 ]; then
@@ -43,7 +54,7 @@ if [ $INIT -eq 1 ]; then
         rsync -a --exclude '.*/' --include '*/' --exclude '*' "./" "$TARGETPATH/"
 
         find . -name '*.md' -exec sh -c 'TAGETPATH="$0" ; SOURCEFILE="$1" ; pandoc "$SOURCEFILE" -s --toc -o "$TAGETPATH/${SOURCEFILE%.md}.html"' "$TARGETPATH" "{}" \;      
-fi
+ fi
 
 # remove all files and directories from target
 # that got updated or removed by git from source dir
@@ -64,7 +75,6 @@ if [ $INIT -eq 0 ]; then
         rsync -a --exclude '.*/' --include '*/' --exclude '*' --delete "./" "$TARGETPATH/" 
 fi
 
-
 # update or create target
 if [ $INIT -eq 0 ]; then
 
@@ -78,5 +88,4 @@ if [ $INIT -eq 0 ]; then
         done
 fi
 
-cd "$CURDIR"
-
+quit
